@@ -11,6 +11,7 @@ import {APP_GUARD} from "@nestjs/core";
 import {JwtAuthGuard} from "./common/guards/jwt-auth.guard";
 import {PermissionsGuard} from "./common/guards/permissions.guard";
 import {RolesGuard} from "./common/guards/roles.guard";
+import {CommandModule} from "nestjs-command";
 
 @Module({
     imports: [
@@ -19,6 +20,7 @@ import {RolesGuard} from "./common/guards/roles.guard";
         PermissionsModule,
         RolesModule,
         UsersModule,
+        CommandModule
     ],
     controllers: [AppController],
     providers: [AppService,
