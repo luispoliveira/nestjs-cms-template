@@ -1,0 +1,14 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: nestjs-cms-template
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest
+    volumes:
+      - ./tmp/postgres:/var/lib/postgresql/data
+
+#HOW TO RUN: docker-compose up

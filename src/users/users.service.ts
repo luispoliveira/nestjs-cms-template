@@ -1,4 +1,4 @@
-import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
+import {BadRequestException, Injectable, Logger, NotFoundException, OnModuleInit} from '@nestjs/common';
 import {CreateUserDto} from './dto/create-user.dto';
 import {UpdateUserDto} from './dto/update-user.dto';
 import {User} from "./entities/user.entity";
@@ -6,9 +6,40 @@ import {Role} from "../roles/entities/role.entity";
 import {Permission} from "../permissions/entities/permission.entity";
 import {AddRemoveRoleDto} from "./dto/add-remove-role.dto";
 import {AddRemovePermissionDto} from "./dto/add-remove-permission.dto";
+import {ConfigService} from "@nestjs/config";
+import {RoleEnum} from "../common/enums/role.enum";
 
 @Injectable()
-export class UsersService {
+export class UsersService implements OnModuleInit {
+    private readonly defaultAdmin: { email: string, username: string, password: string };
+
+    constructor(private readonly config: ConfigService) {
+        this.defaultAdmin = this.config.get('admin')
+    }
+
+    async onModuleInit() {
+        await this.ensureAdminUser()
+    }
+
+    private async ensureAdminUser() {
+        const founded = await this.findOneByUsername(this.defaultAdmin.username)
+
+        if (founded) {
+            Logger.log(`Admin user : ${founded.username}`, UsersService.name);
+            return true;
+        }
+
+        const created = await this.create({
+            email: this.defaultAdmin.email,
+            username: this.defaultAdmin.username,
+            password: this.defaultAdmin.password
+        }, {username: this.defaultAdmin.username} as User);
+
+        created.roles = [await Role.findOne({where: {name: RoleEnum.Admin}})];
+        await created.save();
+
+        Logger.log(`Admin user created: ${created.username}`, UsersService.name);
+    }
 
     async findOneByUsername(username: string): Promise<User> {
         return await User.findOne({
@@ -163,4 +194,6 @@ export class UsersService {
 
         return await user.save();
     }
+
+
 }

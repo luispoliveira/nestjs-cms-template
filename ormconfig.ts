@@ -13,7 +13,7 @@ const config: PostgresConnectionOptions = {
     synchronize: false,
     migrations: ['dist/src/db/migrations/postgres/*.js'],
     cli: {migrationsDir: 'src/db/migrations/postgres'},
-    migrationsRun: false,
+    migrationsRun: process.env.MIGRATION_RUN === 'true',
     migrationsTransactionMode: 'each',
 };
 

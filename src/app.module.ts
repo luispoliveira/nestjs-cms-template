@@ -12,9 +12,17 @@ import {JwtAuthGuard} from "./common/guards/jwt-auth.guard";
 import {PermissionsGuard} from "./common/guards/permissions.guard";
 import {RolesGuard} from "./common/guards/roles.guard";
 import {CommandModule} from "nestjs-command";
+import {ConfigModule} from "@nestjs/config";
+import {configuration} from "./config/configuration";
+import {validationSchema} from "./config/validation";
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            isGlobal: true,
+            load: [configuration],
+            validationSchema
+        }),
         TypeOrmModule.forRoot(config),
         AuthModule,
         PermissionsModule,
